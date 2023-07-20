@@ -14,8 +14,6 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<TaskManagerDBContext>(options => options.UseInMemoryDatabase("TaskManagerDb"));
-//builder.Services.AddDbContext<TaskManagerDBContext>(options =>
-//    options.UseSqlServer(builder.Configuration.GetConnectionString("TaskManagerDBContext") ?? throw new InvalidOperationException("Connection string 'TaskManagerDBContext' not found.")));
 builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<IUserService, UserService>();
 

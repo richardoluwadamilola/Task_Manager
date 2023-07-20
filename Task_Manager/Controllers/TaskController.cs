@@ -25,122 +25,64 @@ namespace TaskManager.Controllers
         public IActionResult CreateTask([FromBody] TaskDto taskDto)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
-            // Validate the priority value
-            if (taskDto.Priority is < 0 or > (Task_Manager.Models.PriorityLevel)2)
-            {
-                ModelState.AddModelError("Priority", "Invalid priority value. Must be between 0 and 2.");
-                return BadRequest(ModelState);
-            }
+            if (!Enum.IsDefined(typeof(PriorityLevel), taskDto.Priority))
+                return BadRequest(new { Message = "Invalid priority value. Must be between 0 and 2." });
 
             var createdTask = _taskService.CreateTask(taskDto);
-
-            if (createdTask != null)
-            {
-                return Ok(createdTask);
-            }
-
-            return StatusCode(StatusCodes.Status500InternalServerError, "Failed to create task.");
-
+                return createdTask != null ? Ok(createdTask) : BadRequest("Failed to create task.");
         }
 
         [HttpGet ("{taskById}")]
         public IActionResult GetTaskById(int taskId)
         {
             var task = _taskService.GetTaskById(taskId);
-
-            if (task != null)
-            {
-                return Ok(task);
-            }
-
-            return NotFound();
+            return task != null ? Ok(task) : BadRequest();
         }
 
         [HttpGet("{userId}/tasks")]
         public IActionResult GetAllTasks(int userId)
         {
             var tasks = _taskService.GetAllTasks(userId);
-
-            if (tasks != null)
-            {
-                return Ok(tasks);
-            }
-
-            return NotFound();
+            return tasks != null ? Ok(tasks) : BadRequest();
         }
 
         [HttpPut("{userId}/tasks")]
         public IActionResult UpdateTask(int taskId, [FromBody] TaskDto taskDto)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
-            var updatedTask = _taskService.UpdateTask(taskId, taskDto);
-
-            if (updatedTask != null)
-            {
-                return Ok(updatedTask);
-            }
-
-            return NotFound();
+            return _taskService.UpdateTask(taskId, taskDto) != null ? Ok() : BadRequest();
         }
 
         [HttpDelete("{userId}/tasks")]
         public IActionResult DeleteTask(int taskId)
         {
             var deletedTask = _taskService.DeleteTask(taskId);
-
-            if (deletedTask != null)
-            {
-                return Ok(deletedTask);
-            }
-
-            return NotFound();
+            return deletedTask != null ? Ok() : BadRequest();
         }
 
         [HttpPost("{userId}/tasks/complete")]
         public IActionResult MarkTaskComplete(int taskId)
         {
             var completedTask = _taskService.MarkTaskComplete(taskId);
-
-            if (completedTask != null)
-            {
-                return Ok(completedTask);
-            }
-
-            return NotFound();
+            return completedTask != null ? Ok() : BadRequest();
         }
 
         [HttpPost("{userId}/tasks/incomplete")]
         public IActionResult MarkTaskIncomplete(int taskId)
         {
             var incompletedTask = _taskService.MarkTaskIncomplete(taskId);
-
-            if (incompletedTask != null)
-            {
-                return Ok(incompletedTask);
-            }
-
-            return NotFound();
+            return incompletedTask != null ? Ok() : BadRequest();
         }
 
         [HttpGet("{userId}/tasks/priority")]
         public IActionResult GetTasksByPriority(int userId, PriorityLevel priority)
         {
             var tasksByPriority = _taskService.GetTasksByPriority(userId, priority);
-
-            if (tasksByPriority != null)
-            {
-                return Ok(tasksByPriority);
-            }
-
-            return NotFound();
+            return tasksByPriority != null ? Ok() : BadRequest();
         }
 
     }
